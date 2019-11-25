@@ -1,21 +1,42 @@
 using System;
+using System.Threading.Tasks;
 
+// 非同期イベントが正しく実行できない……
 namespace Concept.Event.Lesson4 {
     class Main {
-        private event EventHandler<EditEventArgs> OnEdit;
+        private event EventHandler OnEdit;
         public Main() {
             OnEdit += OnEditDefault;
+            /*
+            OnEdit += async (object sender, EventArgs args) => {
+                try {
+                    await Task.Delay(2000);
+                    Console.WriteLine("Edit event Lesson 5 !");
+                } catch (Exception e) {
+                    Console.WriteLine("ERROR: async task.");
+                }
+            };
+            */
         }
         ~Main() {
             OnEdit -= OnEditDefault;
         }
-        void OnEditDefault(object sender, EditEventArgs args) => Console.WriteLine($"Edit event !: {args.Path}");
-        public void Run() {
-            OnEdit?.Invoke(this, new EditEventArgs("test.txt"));
+        // Taskを返せない！ eventの仕様。
+        async void OnEditDefault(object sender, EventArgs args) {
+//        async OnEditDefault(object sender, EventArgs args) { // error CS0246
+            try {
+                await Task.Delay(2000);
+                Console.WriteLine("Edit event Lesson 5 !");
+            } catch (Exception e) {
+                Console.WriteLine($"ERROR: async task.: {e}");
+            }
         }
-    }
-    class EditEventArgs { // EventArgs継承せずともよい
-        public string Path { get; }
-        public EditEventArgs(string path) => Path = path;
+        public void Run() {
+//        public async Task Run() {
+//        public async Run() { // error CS0246
+//        public async Task Run() {
+//            await OnEdit?.Invoke(this, EventArgs.Empty); // error CS4008: Cannot await 'void'
+            OnEdit?.Invoke(this, EventArgs.Empty); // error CS4008: Cannot await 'void'
+        }
     }
 }

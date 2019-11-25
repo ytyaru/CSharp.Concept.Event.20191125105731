@@ -10,8 +10,7 @@ namespace Concept.Event {
             new Lesson2.Main().Run();
             new Lesson3.Main().Run();
             new Lesson4.Main().Run();
-            new Lesson5.Main().Run();
-//            await new Lesson5.Main().Run();
+//            await new Lesson4.Main().Run();
         }
     }
 }
